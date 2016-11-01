@@ -1,3 +1,4 @@
+import argparse
 from automaton import *
 
 start = State()
@@ -18,10 +19,12 @@ state4.set_transitions({'P': state3, 'V': state5})
 state5.set_transitions({'E': end})
 automaton = Automaton(start, end)
 
-print(automaton.generate())
+if __name__ == '__main__':
+	parser = argparse.ArgumentParser(description='Generate strings using Reber grammar.')
+	parser.add_argument('-N', type=int, help='number of strings', required=False, default=1)
+	
+	args = parser.parse_args()
+	N = args.N
 
-s = 0
-N = 10000
-for _ in range(N):
-	s += len(automaton.generate())
-print(s / N)
+	for _ in range(N):
+		print(automaton.generate())
