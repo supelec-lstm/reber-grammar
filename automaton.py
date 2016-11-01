@@ -1,25 +1,29 @@
 import numpy as np
 
 class State:
-	def __init__(self, transitions=None, probabilities=None):
-		self.transitions = transitions or {}
-		nb_transitions = len(self.transitions)
+	def __init__(self):
+		self.transitions = {}
+		self.probabilities = {}
+		self.cum_sums = []
 
-		# Check if probabilities is a valid argument
-		if probabilities is None or len(probabilities) != nb_transitions:
-			self.probabilities = {key: 1/nb_transitions for key in self.transitions}
+	def set_transitions(self, transitions, probabilities=None):
+		self.transitions = transitions
+		# Check if the probabilities are valid
+		if probabilities is None or len(probabilities) != len(self.transitions):
+			self.probabilities = {signal: 1/len(self.transitions) for signal in self.transitions}
 		else:
 			self.probabilities = probabilities
+		self.update_cum_sums()		
 
+	def update_cum_sums(self):
 		# Compute cumulative sums of probabilities
-		self.cum_sums = []
 		s = 0
-		for i, (key, probability) in enumerate(self.probabilities.items()):
+		for i, (signal, probability) in enumerate(self.probabilities.items()):
 			s += probability
 			# Force the final sum to be 1
 			if i+1 == len(self.probabilities):
 				s = 1
-			self.cum_sums.append((s, key))
+			self.cum_sums.append((s, signal))
 
 	def next(self, signal):
 		if signal in self.transitions:
@@ -32,11 +36,11 @@ class State:
 		v = np.random.rand()
 		# For more efficiency, binary search should be used
 		i = 0
-		s, key = self.cum_sums[i] 
+		s, signal = self.cum_sums[i] 
 		while v > s:
 			i += 1
-			s, key = self.cum_sums[i]
-		return key
+			s, signal = self.cum_sums[i]
+		return signal
 
 class Automaton:
 	def __init__(self, start, end):
