@@ -1,15 +1,7 @@
 import argparse
 from automaton import *
 
-if __name__ == '__main__':
-	parser = argparse.ArgumentParser(description='Generate strings using the symmetrical Reber grammar.')
-	parser.add_argument('-N', type=int, help='number of strings', required=False, default=1)
-	parser.add_argument('-P', type=float, help='probability of a loop', required=False, default=0.5)
-	
-	args = parser.parse_args()
-	N = args.N
-	p_loop = args.P
-
+def create_automaton(p_loop):
 	start = State()
 	state0 = State()
 	state1 = State()
@@ -46,7 +38,18 @@ if __name__ == '__main__':
 	state13.set_transitions({'P': state7})
 	# end
 	state7.set_transitions({'E': end})
-	automaton = Automaton(start, end)
+	return Automaton(start, end)
+
+if __name__ == '__main__':
+	parser = argparse.ArgumentParser(description='Generate strings using the symmetrical Reber grammar.')
+	parser.add_argument('-N', type=int, help='number of strings', required=False, default=1)
+	parser.add_argument('-P', type=float, help='probability of a loop', required=False, default=0.5)
+	
+	args = parser.parse_args()
+	N = args.N
+	p_loop = args.P
+
+	automaton = create_automaton(p_loop)
 
 	for _ in range(N):
 		print(automaton.generate())
